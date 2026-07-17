@@ -78,6 +78,7 @@ TD.q.wizard = (() => {
     els.progress.style.width = `${((index + 1) / steps.length) * 100}%`;
     els.back.hidden = index === 0;
     els.next.hidden = isReview(step);
+    if (els.exportBtn) els.exportBtn.hidden = !isReview(step);
     els.blocker.hidden = true;
 
     window.scrollTo({ top: 0 });
@@ -142,6 +143,24 @@ TD.q.wizard = (() => {
 
     els.next.addEventListener('click', attemptNext);
     els.back.addEventListener('click', () => go(index - 1));
+
+    if (els.exportBtn) {
+      els.exportBtn.addEventListener('click', () => {
+        const data = {
+          answers: TD.state.getAll(),
+          additional_trustees: TD.q.trustees.list()
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'trust-deed-questionnaire.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    }
 
     // Enter should advance rather than submit — there is nothing to submit to.
     els.form.addEventListener('submit', (event) => {
