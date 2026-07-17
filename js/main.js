@@ -11,4 +11,5 @@ TD.q.wizard.init({
   blocker: document.getElementById('q-blocker'),
   stepCount: document.getElementById('q-step-count'),
   progress: document.getElementById('q-progress-bar'),
+  exportBtn: document.getElementById('q-export'),
 });

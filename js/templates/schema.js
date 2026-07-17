@@ -77,24 +77,14 @@ TD.fields = [
   },
   {
     id: 'husband_beneficiary_name',
-    label: 'Beneficiary (Mr.) — full name',
+    label: 'Beneficiary — full name',
     type: 'text', group: 'beneficiaries', default: '', required: true,
     hint: 'Named in both the income and capital beneficiary clauses, together '
         + 'with the children born out of the marriage and their children.',
   },
   {
     id: 'husband_beneficiary_id',
-    label: 'Beneficiary (Mr.) — identity number',
-    type: 'id', group: 'beneficiaries', default: '', required: true,
-  },
-  {
-    id: 'wife_beneficiary_name',
-    label: 'Beneficiary (Mrs.) — full name',
-    type: 'text', group: 'beneficiaries', default: '', required: true,
-  },
-  {
-    id: 'wife_beneficiary_id',
-    label: 'Beneficiary (Mrs.) — identity number',
+    label: 'Beneficiary — identity number',
     type: 'id', group: 'beneficiaries', default: '', required: true,
   },
   {
