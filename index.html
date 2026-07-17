@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trust Deed Questionnaire</title>
+  <link rel="icon" href="../assets/logo.jpg">
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="css/questionnaire.css">
+</head>
+<body>
+  <header class="q-header">
+    <div class="brand">
+      <img class="brand-logo" src="../assets/logo.jpg" alt="VDM Oudit · Audit">
+      <div>
+        <h1>Trust deed questionnaire</h1>
+        <p class="tagline">Your answers, in your own time</p>
+      </div>
+    </div>
+    <p id="q-step-count" class="step-count" role="status"></p>
+  </header>
+
+  <div class="q-progress" aria-hidden="true"><div id="q-progress-bar"></div></div>
+
+  <main class="q-main">
+    <form id="q-form" class="q-card" novalidate>
+      <div id="q-steps"></div>
+
+      <p id="q-blocker" class="blocker" role="alert" hidden></p>
+
+      <nav class="q-nav">
+        <button id="q-back" type="button" class="btn btn-outline">Back</button>
+        <button id="q-next" type="button" class="btn btn-solid">Continue</button>
+      </nav>
+    </form>
+  </main>
+
+  <!-- Classic scripts only, in dependency order: browsers refuse ES-module
+       imports on file:// URLs, and double-clicking this file must work.
+       The questionnaire reuses the generator's schema, state and validation
+       verbatim — the field contract is shared, only the interface differs. -->
+  <script src="../js/templates/schema.js"></script>
+  <script src="../js/lib/format.js"></script>
+  <script src="../js/lib/validate.js"></script>
+  <script src="../js/state.js"></script>
+  <script src="js/steps.js"></script>
+  <script src="js/qform.js"></script>
+  <script src="js/review.js"></script>
+  <script src="js/wizard.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,345 @@
+/* Client-facing questionnaire: one centred card, one step at a time.
+   Self-contained rather than layered on css/layout.css — the generator's
+   stylesheet is built around the two-pane shell this page deliberately drops.
+   The palette is copied so both faces of the product look like one firm. */
+
+:root {
+  --navy: #1c2a4a;
+  --navy-deep: #131f38;
+  --navy-soft: #46557a;
+  --gold: #c19a3d;
+  --gold-deep: #9a7a28;
+  --gold-pale: #f6efdd;
+  --paper: #ffffff;
+  --canvas: #f7f5f0;
+  --line: #e6e0d2;
+  --error: #b03a2e;
+  --error-pale: #fbeceb;
+  --sans: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  font-family: var(--sans);
+  color: var(--navy);
+  background: var(--canvas);
+}
+
+/* ---- header ---- */
+
+.q-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 24px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.brand-logo {
+  flex: none;
+  /* Wide banner artwork on white: sized by height, not boxed. */
+  height: 36px;
+  width: auto;
+  padding-right: 12px;
+  border-right: 1px solid var(--line);
+}
+
+.brand h1 {
+  font-size: 16px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.brand .tagline {
+  font-size: 12px;
+  color: var(--navy-soft);
+}
+
+.step-count {
+  font-size: 12.5px;
+  color: var(--navy-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- progress ---- */
+
+.q-progress {
+  height: 3px;
+  background: var(--line);
+}
+
+.q-progress > div {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold));
+  transition: width 220ms ease;
+}
+
+/* ---- card ---- */
+
+.q-main {
+  padding: 40px 20px 80px;
+}
+
+.q-card {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 36px 40px 28px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(28, 42, 74, 0.06);
+}
+
+.q-step h2 {
+  font-size: 24px;
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.q-intro {
+  margin-top: 10px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--navy-soft);
+}
+
+.q-step > h2 + .q-field,
+.q-intro + .q-field,
+.q-intro + .review {
+  margin-top: 28px;
+}
+
+/* ---- fields ---- */
+
+.q-field + .q-field {
+  margin-top: 22px;
+}
+
+.q-field[hidden] {
+  display: none;
+}
+
+.q-field > label {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.q-field .req {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--navy-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.q-field input[type="text"],
+.q-field input[type="date"],
+.q-field textarea {
+  display: block;
+  width: 100%;
+  margin-top: 7px;
+  padding: 11px 12px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--navy);
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.q-field input:focus,
+.q-field textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-pale);
+}
+
+.q-field textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.q-field-checkbox > label {
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  font-size: 14.5px;
+  font-weight: 500;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.q-field-checkbox > label:hover {
+  border-color: var(--gold);
+  background: var(--gold-pale);
+}
+
+.q-field-checkbox input {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  accent-color: var(--gold-deep);
+}
+
+.q-hint {
+  margin-top: 6px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--navy-soft);
+}
+
+.q-error {
+  margin-top: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--error);
+}
+
+.q-field.invalid input,
+.q-field.invalid textarea {
+  border-color: var(--error);
+}
+
+.q-field.invalid input:focus,
+.q-field.invalid textarea:focus {
+  box-shadow: 0 0 0 3px var(--error-pale);
+}
+
+/* ---- review step ---- */
+
+.review-group + .review-group {
+  margin-top: 22px;
+}
+
+.review-group h3 {
+  padding-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold-deep);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--line);
+}
+
+.review-group dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.review-group dt {
+  color: var(--navy-soft);
+}
+
+.review-group dd {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.review-group dd.empty {
+  font-weight: 400;
+  color: var(--navy-soft);
+}
+
+/* ---- navigation ---- */
+
+.blocker {
+  margin-top: 24px;
+  padding: 11px 14px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--error);
+  background: var(--error-pale);
+  border: 1px solid var(--error);
+  border-radius: 8px;
+}
+
+.q-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.q-nav .btn[hidden] {
+  display: none;
+}
+
+/* Keeps Continue hard right when Back is hidden on the first step. */
+.q-nav #q-next {
+  margin-left: auto;
+}
+
+.btn {
+  padding: 11px 22px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.btn-outline {
+  color: var(--navy);
+  border: 1.5px solid var(--navy);
+  background: var(--paper);
+}
+
+.btn-outline:hover {
+  background: var(--navy);
+  color: var(--paper);
+}
+
+.btn-solid {
+  color: var(--navy-deep);
+  background: linear-gradient(180deg, #d8b458, var(--gold));
+  border: 1.5px solid var(--gold-deep);
+}
+
+.btn-solid:hover {
+  background: linear-gradient(180deg, #e0c06a, #cba64a);
+}
+
+@media (max-width: 640px) {
+  .q-main {
+    padding: 20px 12px 60px;
+  }
+
+  .q-card {
+    padding: 24px 20px 20px;
+  }
+
+  .step-count {
+    display: none;
+  }
+
+  .review-group dl {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .review-group dd {
+    margin-bottom: 8px;
+  }
+}
