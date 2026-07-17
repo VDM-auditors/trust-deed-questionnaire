@@ -22,10 +22,10 @@ TD.q.trustees = (() => {
 
   // Caps the extras only — the deed's own three are separate fields. A trust
   // needing more than nine trustees in total is a conversation, not a form.
-  const MAX = 6;
+  const MAX = 4;
 
-  const extras = [];
-  let seq = 0;
+  let seq = 1;
+  const extras = [{ key: `x${seq}`, name: '', id: '', touched: false }];
   let listEl;
   let addBtn;
   let countEl;
