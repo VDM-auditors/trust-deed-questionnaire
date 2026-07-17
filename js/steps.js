@@ -1,10 +1,13 @@
 // Step definitions for the questionnaire wizard.
 //
-// The steps mirror TD.groups one-for-one — the questionnaire must never invent
-// a field or a grouping of its own, because js/templates/schema.js is the
-// contract shared with the deed template. What lives here is only the plain
-// wording a client sees instead of the auditor's group label, plus the
-// closing review step.
+// The steps track TD.groups — the questionnaire must never invent a field or a
+// grouping of its own, because js/templates/schema.js is the contract shared
+// with the deed template. What lives here is only the plain wording a client
+// sees instead of the auditor's group label, plus the closing review step.
+//
+// A group may be dropped from the client's path (HIDDEN below), which is a
+// question the client is not asked, not a field the questionnaire has removed:
+// the schema keeps it, the generator still shows it, and its default applies.
 //
 // Classic script: exposed as TD.q.steps (see js/templates/schema.js on why).
 
@@ -12,13 +15,14 @@ window.TD = window.TD || {};
 TD.q = TD.q || {};
 
 TD.q.steps = (() => {
+  // Groups the client is never asked about. Whether this deed replaces an
+  // earlier one is the auditor's call, made in the generator — the client has
+  // no way to know, and is_replacement_deed's schema default (false) already
+  // describes a new trust. Hidden here means hidden on the review step too.
+  const HIDDEN = new Set(['deed_type']);
+
   // Keyed by group id. A group with no entry falls back to its schema label.
   const COPY = {
-    deed_type: {
-      title: 'Is this a new trust, or a replacement?',
-      intro: 'Most trusts are new. Only tick the box below if this deed is '
-           + 'replacing a trust deed that already exists.',
-    },
     trust: {
       title: 'The trust',
       intro: 'The name the trust will be known by.',
@@ -31,8 +35,9 @@ TD.q.steps = (() => {
     },
     trustees: {
       title: 'The trustees',
-      intro: 'The trustees administer the trust. Three are needed: two of your '
-           + 'choosing, and one independent trustee.',
+      intro: 'The trustees administer the trust. Three are needed at minimum: '
+           + 'two of your choosing, and one independent trustee. If the trust '
+           + 'needs more, you can add them below.',
     },
     beneficiaries: {
       title: 'The beneficiaries',
@@ -49,9 +54,14 @@ TD.q.steps = (() => {
   };
 
   const REVIEW_ID = '__review';
+  const TRUSTEES_ID = 'trustees';
+
+  function isHidden(groupId) {
+    return HIDDEN.has(groupId);
+  }
 
   function all() {
-    const groups = TD.groups.map((group) => ({
+    const groups = TD.groups.filter((g) => !isHidden(g.id)).map((group) => ({
       id: group.id,
       title: (COPY[group.id] && COPY[group.id].title) || group.label,
       intro: (COPY[group.id] && COPY[group.id].intro) || '',
@@ -68,5 +78,5 @@ TD.q.steps = (() => {
     return groups;
   }
 
-  return { all, REVIEW_ID };
+  return { all, isHidden, REVIEW_ID, TRUSTEES_ID };
 })();

@@ -144,15 +144,19 @@ TD.q.form = (() => {
       .filter(Boolean);
   }
 
+  // Returns whether it found something to focus, so the caller can fall
+  // through to fields this module does not own (see js/trustees.js).
   function focusFirstInvalid(section, step) {
     const values = getAll();
     const bad = visibleFields(step).find((f) => validateField(f, values));
-    if (bad) {
-      const input = section.querySelector(`#q-${bad.id}`);
-      if (input) {
-        input.focus();
-      }
+    if (!bad) {
+      return false;
     }
+    const input = section.querySelector(`#q-${bad.id}`);
+    if (input) {
+      input.focus();
+    }
+    return true;
   }
 
   return { buildStep, refresh, markStepTouched, stepErrors, focusFirstInvalid };

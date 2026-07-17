@@ -14,6 +14,7 @@ TD.q.wizard = (() => {
   let index = 0;
   let els = {};
   let reviewBody;
+  let painted = false;
 
   function isReview(step) {
     return step.id === TD.q.steps.REVIEW_ID;
@@ -27,6 +28,7 @@ TD.q.wizard = (() => {
 
     const heading = document.createElement('h2');
     heading.textContent = step.title;
+    heading.tabIndex = -1; // focus target on step change, not a tab stop
     section.appendChild(heading);
 
     if (step.intro) {
@@ -42,9 +44,23 @@ TD.q.wizard = (() => {
       section.appendChild(reviewBody);
     } else {
       TD.q.form.buildStep(section, step);
+      if (step.id === TD.q.steps.TRUSTEES_ID) {
+        TD.q.trustees.mount(section);
+      }
     }
 
     return section;
+  }
+
+  function goToGroup(groupId) {
+    const at = steps.findIndex((s) => s.id === groupId);
+    if (at !== -1) {
+      go(at);
+    }
+  }
+
+  function renderReview() {
+    TD.q.review.render(reviewBody, goToGroup);
   }
 
   function paint() {
@@ -55,7 +71,7 @@ TD.q.wizard = (() => {
     });
 
     if (isReview(step)) {
-      TD.q.review.render(reviewBody);
+      renderReview();
     }
 
     els.stepCount.textContent = `Step ${index + 1} of ${steps.length} · ${step.title}`;
@@ -65,6 +81,19 @@ TD.q.wizard = (() => {
     els.blocker.hidden = true;
 
     window.scrollTo({ top: 0 });
+
+    // Moving to a step is silent otherwise: the card never moves, so a screen
+    // reader would read nothing. Focus the heading rather than the first input,
+    // so the client hears the question before its first label. Not on the very
+    // first paint — nobody has navigated anywhere yet, and stealing focus on
+    // load would only fight whatever the browser restored.
+    if (painted) {
+      const heading = sections[index].querySelector('h2');
+      if (heading) {
+        heading.focus();
+      }
+    }
+    painted = true;
   }
 
   function go(next) {
@@ -72,18 +101,32 @@ TD.q.wizard = (() => {
     paint();
   }
 
+  // Extra trustees are gated with the rest of their step, but they are not
+  // schema fields, so their errors come from TD.q.trustees (see trustees.js).
+  function stepErrors(step) {
+    const errors = TD.q.form.stepErrors(step);
+    if (step.id === TD.q.steps.TRUSTEES_ID) {
+      TD.q.trustees.markTouched();
+      errors.push(...TD.q.trustees.errors());
+    }
+    return errors;
+  }
+
   function attemptNext() {
     const step = steps[index];
     TD.q.form.markStepTouched(step);
     TD.q.form.refresh(sections[index], step);
 
-    const errors = TD.q.form.stepErrors(step);
+    const errors = stepErrors(step);
     if (errors.length > 0) {
       els.blocker.hidden = false;
       els.blocker.textContent = errors.length === 1
         ? 'One answer on this page still needs attention.'
         : `${errors.length} answers on this page still need attention.`;
-      TD.q.form.focusFirstInvalid(sections[index], step);
+      const focused = TD.q.form.focusFirstInvalid(sections[index], step);
+      if (!focused && step.id === TD.q.steps.TRUSTEES_ID) {
+        TD.q.trustees.focusFirstInvalid();
+      }
       return;
     }
     go(index + 1);
@@ -106,12 +149,14 @@ TD.q.wizard = (() => {
       attemptNext();
     });
 
-    // A checkbox can reveal or hide fields on the current step (the replacement
-    // deed date), so visibility has to follow state, not just step changes.
+    // Errors clear as the client types, and showIf visibility follows state
+    // rather than step changes — so a repaint hangs off every set(), not just
+    // navigation. (No client step carries a showIf toggle now that deed_type is
+    // hidden, but the schema owns that, not this file.)
     subscribe(() => {
       const step = steps[index];
       if (isReview(step)) {
-        TD.q.review.render(reviewBody);
+        renderReview();
       } else {
         TD.q.form.refresh(sections[index], step);
       }

@@ -1,5 +1,5 @@
 // The closing step: every answer, read-only, for a last look before the client
-// is done. Reads TD.state only — nothing here writes.
+// is done. Reads TD.state and TD.q.trustees — nothing here writes.
 //
 // Classic script: exposed as TD.q.review (see js/templates/schema.js on why).
 
@@ -28,11 +28,37 @@ TD.q.review = (() => {
     return cleanName(value);
   }
 
-  function render(container) {
+  function row(list, term, value) {
+    const dt = document.createElement('dt');
+    dt.textContent = term;
+    const dd = document.createElement('dd');
+    dd.textContent = value;
+    if (value === '—') {
+      dd.classList.add('empty');
+    }
+    list.append(dt, dd);
+  }
+
+  // Trustees the client added beyond the deed's three. Not schema fields —
+  // see js/trustees.js for why they are kept apart.
+  function addExtraTrustees(list) {
+    TD.q.trustees.list().forEach((trustee, i) => {
+      row(list, `Additional trustee ${i + 1} — full name`, cleanName(trustee.name) || '—');
+      row(list, `Additional trustee ${i + 1} — identity number`, formatSaId(trustee.id) || '—');
+    });
+  }
+
+  // onEdit(groupId) sends the client back to that step to change an answer.
+  function render(container, onEdit) {
     container.textContent = '';
     const values = getAll();
+    const groups = TD.groups.filter((g) => !TD.q.steps.isHidden(g.id));
 
-    for (const group of TD.groups) {
+    // Head each block with the wording the client was asked under, not the
+    // schema's label — nobody filling this in should meet "clause 18.1".
+    const titles = new Map(TD.q.steps.all().map((s) => [s.id, s.title]));
+
+    for (const group of groups) {
       const fields = TD.fields.filter(
         (f) => f.group === group.id && isFieldVisible(f, values),
       );
@@ -43,20 +69,27 @@ TD.q.review = (() => {
       const block = document.createElement('section');
       block.className = 'review-group';
 
+      const head = document.createElement('div');
+      head.className = 'review-head';
+
       const heading = document.createElement('h3');
-      heading.textContent = group.label;
-      block.appendChild(heading);
+      heading.textContent = titles.get(group.id) || group.label;
+
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'btn-link';
+      edit.textContent = 'Change';
+      edit.addEventListener('click', () => onEdit(group.id));
+
+      head.append(heading, edit);
+      block.appendChild(head);
 
       const list = document.createElement('dl');
       for (const field of fields) {
-        const term = document.createElement('dt');
-        term.textContent = field.label;
-        const def = document.createElement('dd');
-        def.textContent = displayValue(field, values);
-        if (def.textContent === '—') {
-          def.classList.add('empty');
-        }
-        list.append(term, def);
+        row(list, field.label, displayValue(field, values));
+      }
+      if (group.id === TD.q.steps.TRUSTEES_ID) {
+        addExtraTrustees(list);
       }
       block.appendChild(list);
       container.appendChild(block);

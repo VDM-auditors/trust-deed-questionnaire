@@ -45,17 +45,28 @@ body {
 
 .brand-logo {
   flex: none;
-  /* Wide banner artwork on white: sized by height, not boxed. */
-  height: 36px;
-  width: auto;
-  padding-right: 12px;
-  border-right: 1px solid var(--line);
+  /* The mark is a wide banner (OUDIT · oval · AUDIT, roughly 2.3:1) centred on
+     a 16:9 canvas with deep empty margins top and bottom. Sizing it by height
+     alone gives a 64px-wide image and the lettering turns to mush, so the box
+     takes the banner's own proportions and object-fit crops the dead canvas
+     instead of the artwork. */
+  width: 128px;
+  height: 54px;
+  object-fit: cover;
+}
+
+.brand > div {
+  min-width: 0;
+  padding-left: 14px;
+  border-left: 1px solid var(--line);
 }
 
 .brand h1 {
   font-size: 16px;
   font-weight: 650;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .brand .tagline {
@@ -106,6 +117,18 @@ body {
   font-weight: 650;
   line-height: 1.25;
   letter-spacing: -0.01em;
+}
+
+/* The heading takes focus on every step change (wizard.js). That must be
+   silent for a mouse, but still visible to a keyboard. */
+.q-step h2:focus {
+  outline: none;
+}
+
+.q-step h2:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+  border-radius: 4px;
 }
 
 .q-intro {
@@ -222,20 +245,135 @@ body {
   box-shadow: 0 0 0 3px var(--error-pale);
 }
 
+/* ---- additional trustees ---- */
+
+.trustee-extras {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px dashed var(--line);
+}
+
+.trustee-list {
+  /* Ordered for the screen reader — the cards number themselves visibly. */
+  list-style: none;
+}
+
+.trustee-list[hidden] {
+  display: none;
+}
+
+.trustee-card {
+  padding: 18px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.trustee-card + .trustee-card {
+  margin-top: 14px;
+}
+
+.trustee-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.trustee-head h3 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold-deep);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Only once there are cards to sit under — the empty state already has the
+   section's own padding above the button. */
+.trustee-list:not([hidden]) + .btn-add {
+  margin-top: 16px;
+}
+
+/* Stands apart from the .btn nav pair on purpose: adding a trustee is a change
+   to this page, not a move to the next one, and should not compete with
+   Continue. Self-contained rather than .btn + a modifier — .btn is defined
+   further down and would win the padding on source order. */
+.btn-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--navy);
+  background: var(--paper);
+  border: 1.5px dashed var(--navy-soft);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.btn-add::before {
+  content: "+";
+  font-size: 16px;
+  line-height: 1;
+  color: var(--gold-deep);
+}
+
+.btn-add:hover {
+  border-style: solid;
+  border-color: var(--gold);
+  background: var(--gold-pale);
+}
+
+.btn-add[hidden] {
+  display: none;
+}
+
+.btn-link {
+  padding: 2px 4px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--navy-soft);
+  background: none;
+  border: none;
+  border-radius: 4px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.btn-link:hover {
+  color: var(--error);
+}
+
 /* ---- review step ---- */
 
 .review-group + .review-group {
   margin-top: 22px;
 }
 
-.review-group h3 {
+.review-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
   padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+}
+
+.review-head .btn-link:hover {
+  color: var(--gold-deep);
+}
+
+.review-group h3 {
   font-size: 12px;
   font-weight: 700;
   color: var(--gold-deep);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  border-bottom: 1px solid var(--line);
 }
 
 .review-group dl {
@@ -330,8 +468,31 @@ body {
     padding: 24px 20px 20px;
   }
 
+  .q-header {
+    padding: 10px 14px;
+  }
+
+  .brand-logo {
+    width: 96px;
+    height: 40px;
+  }
+
+  .q-step h2 {
+    font-size: 21px;
+  }
+
   .step-count {
     display: none;
+  }
+
+  /* Thumb-sized targets, and Continue stays reachable without a scroll back. */
+  .q-nav .btn {
+    flex: 1;
+    padding: 13px 18px;
+  }
+
+  .trustee-card {
+    padding: 14px;
   }
 
   .review-group dl {
