@@ -66,33 +66,13 @@ TD.fields = [
   },
   {
     id: 'first_trustee_name',
-    label: 'First trustee — full name',
+    label: 'Trustee 1 — full name',
     type: 'text', group: 'trustees', default: '', required: true,
     hint: 'Appears in the parties block and again in clause 4.1.',
   },
   {
     id: 'first_trustee_id',
-    label: 'First trustee — identity number',
-    type: 'id', group: 'trustees', default: '', required: true,
-  },
-  {
-    id: 'second_trustee_name',
-    label: 'Second trustee — full name',
-    type: 'text', group: 'trustees', default: '', required: true,
-  },
-  {
-    id: 'second_trustee_id',
-    label: 'Second trustee — identity number',
-    type: 'id', group: 'trustees', default: '', required: true,
-  },
-  {
-    id: 'independent_trustee_name',
-    label: 'Independent trustee — full name',
-    type: 'text', group: 'trustees', default: '', required: true,
-  },
-  {
-    id: 'independent_trustee_id',
-    label: 'Independent trustee — identity number',
+    label: 'Trustee 1 — identity number',
     type: 'id', group: 'trustees', default: '', required: true,
   },
   {

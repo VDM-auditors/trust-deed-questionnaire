@@ -35,9 +35,8 @@ TD.q.steps = (() => {
     },
     trustees: {
       title: 'The trustees',
-      intro: 'The trustees administer the trust. Three are needed at minimum: '
-           + 'two of your choosing, and one independent trustee. If the trust '
-           + 'needs more, you can add them below.',
+      intro: 'The trustees administer the trust. Please provide Trustee 1 below, '
+           + 'and add any additional trustees if needed.',
     },
     beneficiaries: {
       title: 'The beneficiaries',

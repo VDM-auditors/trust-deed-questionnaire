@@ -22,10 +22,10 @@ TD.q.trustees = (() => {
 
   // Caps the extras only — the deed's own three are separate fields. A trust
   // needing more than nine trustees in total is a conversation, not a form.
-  const MAX = 4;
+  const MAX = 3;
 
-  let seq = 1;
-  const extras = [{ key: `x${seq}`, name: '', id: '', touched: false }];
+  const extras = [];
+  let seq = 0;
   let listEl;
   let addBtn;
   let countEl;
@@ -217,8 +217,8 @@ TD.q.trustees = (() => {
     countEl = document.createElement('p');
     countEl.className = 'q-hint';
     countEl.hidden = true;
-    countEl.textContent = `That is the most this form takes (${MAX} beyond the `
-      + 'three above). If the trust needs more, tell us in your covering email.';
+    countEl.textContent = `That is the most this form takes (${MAX} additional trustees). `
+      + 'If the trust needs more, tell us in your covering email.';
 
     block.append(listEl, addBtn, countEl);
     section.appendChild(block);
