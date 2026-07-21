@@ -30,8 +30,12 @@ TD.q.trustees = (() => {
   let addBtn;
   let countEl;
 
+  // `key` is this session's handle on a card, not part of the captured answer —
+  // TD.q.independent holds its choice by key so that removing a card above the
+  // chosen trustee cannot slide the choice onto someone else. The export strips
+  // it (see js/wizard.js).
   function list() {
-    return extras.map(({ name, id }) => ({ name, id }));
+    return extras.map(({ key, name, id }) => ({ key, name, id }));
   }
 
   function blank() {
@@ -103,6 +107,9 @@ TD.q.trustees = (() => {
     input.addEventListener('input', () => {
       trustee[key] = input.value;
       repaintErrors();
+      // A name typed here adds (or blanks) a candidate for the independent
+      // trustee, so that list has to follow this keystroke too.
+      TD.q.independent.refresh();
     });
     input.addEventListener('blur', () => {
       trustee.touched = true;
@@ -184,6 +191,7 @@ TD.q.trustees = (() => {
     addBtn.hidden = extras.length >= MAX;
     countEl.hidden = extras.length < MAX;
     repaintErrors();
+    TD.q.independent.refresh();
   }
 
   function add() {

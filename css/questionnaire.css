@@ -172,6 +172,7 @@ body {
 
 .q-field input[type="text"],
 .q-field input[type="date"],
+.q-field select,
 .q-field textarea {
   display: block;
   width: 100%;
@@ -187,6 +188,7 @@ body {
 }
 
 .q-field input:focus,
+.q-field select:focus,
 .q-field textarea:focus {
   outline: none;
   border-color: var(--gold);
@@ -236,6 +238,7 @@ body {
 }
 
 .q-field.invalid input,
+.q-field.invalid select,
 .q-field.invalid textarea {
   border-color: var(--error);
 }
@@ -328,6 +331,90 @@ body {
 }
 
 .btn-add[hidden] {
+  display: none;
+}
+
+/* ---- independent trustee ---- */
+
+.independent-block {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px dashed var(--line);
+}
+
+.independent-block h3 {
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold-deep);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.independent-list {
+  list-style: none;
+  margin-top: 14px;
+}
+
+.independent-list[hidden] {
+  display: none;
+}
+
+.independent-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.independent-list li + li {
+  margin-top: 8px;
+}
+
+.independent-list input {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  accent-color: var(--gold-deep);
+  cursor: pointer;
+}
+
+.independent-list label {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  cursor: pointer;
+}
+
+.independent-name {
+  font-weight: 600;
+}
+
+/* The position the client entered them in, so two trustees sharing a surname
+   are still tellable apart. */
+.independent-role {
+  font-size: 12px;
+  color: var(--navy-soft);
+}
+
+/* Louder than .q-hint, quieter than .blocker — this warns, it does not stop. */
+.independent-warn {
+  margin-top: 14px;
+  padding: 10px 13px;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--error);
+  background: var(--error-pale);
+  border: 1px solid var(--error);
+  border-radius: 8px;
+}
+
+.independent-warn[hidden] {
   display: none;
 }
 

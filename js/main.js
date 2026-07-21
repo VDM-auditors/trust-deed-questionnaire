@@ -3,6 +3,10 @@
 
 window.TD = window.TD || {};
 
+// Keeps settlor_name composed from the surname and first names the client
+// gives, so the exported JSON carries the name the deed's tag needs.
+TD.derive.init();
+
 TD.q.wizard.init({
   form: document.getElementById('q-form'),
   container: document.getElementById('q-steps'),

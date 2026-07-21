@@ -15,6 +15,9 @@ TD.q.wizard = (() => {
   let els = {};
   let reviewBody;
   let painted = false;
+  // Mounted repeatable groups, by step id — the controllers TD.q.repeat returns
+  // so this file can gate and focus them like any other answer on the step.
+  const repeats = new Map();
 
   function isReview(step) {
     return step.id === TD.q.steps.REVIEW_ID;
@@ -44,8 +47,17 @@ TD.q.wizard = (() => {
       section.appendChild(reviewBody);
     } else {
       TD.q.form.buildStep(section, step);
+      // A repeatable group belongs to a schema group, so it lands under that
+      // group's own fields — beneficiaries 3+ below the two the deed names.
+      const groups = (TD.repeatables || []).filter((r) => r.group === step.id);
+      if (groups.length > 0) {
+        repeats.set(step.id, groups.map((spec) => TD.q.repeat.mount(section, spec)));
+      }
       if (step.id === TD.q.steps.TRUSTEES_ID) {
         TD.q.trustees.mount(section);
+        // After the extras: the chooser lists every trustee named above it, so
+        // it can only be built once they exist on the page.
+        TD.q.independent.mount(section);
       }
     }
 
@@ -104,11 +116,17 @@ TD.q.wizard = (() => {
 
   // Extra trustees are gated with the rest of their step, but they are not
   // schema fields, so their errors come from TD.q.trustees (see trustees.js).
+  // Repeatable rows are in TD.state but are not scalars, so TD.validate cannot
+  // see them either — their errors come from the mounted controller.
   function stepErrors(step) {
     const errors = TD.q.form.stepErrors(step);
     if (step.id === TD.q.steps.TRUSTEES_ID) {
       TD.q.trustees.markTouched();
       errors.push(...TD.q.trustees.errors());
+    }
+    for (const group of repeats.get(step.id) || []) {
+      group.markTouched();
+      errors.push(...group.errors());
     }
     return errors;
   }
@@ -124,9 +142,16 @@ TD.q.wizard = (() => {
       els.blocker.textContent = errors.length === 1
         ? 'One answer on this page still needs attention.'
         : `${errors.length} answers on this page still need attention.`;
-      const focused = TD.q.form.focusFirstInvalid(sections[index], step);
+      let focused = TD.q.form.focusFirstInvalid(sections[index], step);
       if (!focused && step.id === TD.q.steps.TRUSTEES_ID) {
-        TD.q.trustees.focusFirstInvalid();
+        focused = TD.q.trustees.focusFirstInvalid();
+      }
+      // Last, because these sit below the step's own fields on the page.
+      for (const group of repeats.get(step.id) || []) {
+        if (focused) {
+          break;
+        }
+        focused = group.focusFirstInvalid();
       }
       return;
     }
@@ -148,7 +173,16 @@ TD.q.wizard = (() => {
       els.exportBtn.addEventListener('click', () => {
         const data = {
           answers: TD.state.getAll(),
+          // Repeatable groups, keyed by group id — beneficiaries 3+ today.
+          // Separate from `answers` because they are rows, not scalars, and
+          // TD.state keeps the two stores apart for the same reason.
+          rows: TD.state.getAllRows(),
+          // `key` is a session handle, not an answer — see js/trustees.js.
           additional_trustees: TD.q.trustees.list()
+            .map(({ name, id }) => ({ name, id })),
+          // null when the client left it open; the workspace then leaves the
+          // deed's independent trustee slot empty rather than guessing.
+          independent_trustee: TD.q.independent.selection()
         };
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);

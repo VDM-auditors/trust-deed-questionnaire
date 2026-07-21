@@ -46,6 +46,27 @@ TD.q.review = (() => {
       row(list, `Additional trustee ${i + 1} — full name`, cleanName(trustee.name) || '—');
       row(list, `Additional trustee ${i + 1} — identity number`, formatSaId(trustee.id) || '—');
     });
+    // Also not a schema field — a choice across the trustees rather than a
+    // value on one of them. See js/independent.js.
+    row(list, 'Independent trustee (swears the affidavit)',
+      TD.q.independent.chosenName() || '—');
+  }
+
+  // Rows of a repeatable group (TD.repeatables). These ARE in TD.state, unlike
+  // the extra trustees above, but they are rows rather than scalars so the
+  // scalar loop below cannot reach them.
+  function addRows(list, groupId) {
+    for (const spec of (TD.repeatables || []).filter((r) => r.group === groupId)) {
+      TD.state.getRows(spec.id).forEach((cells, i) => {
+        // rowOffset: row 1 here is beneficiary 3, the number this person
+        // carries on form J450.
+        const position = i + spec.rowOffset;
+        for (const field of spec.fields) {
+          row(list, `${spec.rowLabel} ${position} — ${field.label}`,
+            displayValue(field, cells));
+        }
+      });
+    }
   }
 
   // onEdit(groupId) sends the client back to that step to change an answer.
@@ -59,8 +80,10 @@ TD.q.review = (() => {
     const titles = new Map(TD.q.steps.all().map((s) => [s.id, s.title]));
 
     for (const group of groups) {
+      // Derived fields are composed from answers already listed here, so
+      // showing them would ask the client to check the same name twice.
       const fields = TD.fields.filter(
-        (f) => f.group === group.id && isFieldVisible(f, values),
+        (f) => f.group === group.id && !f.derived && isFieldVisible(f, values),
       );
       if (fields.length === 0) {
         continue;
@@ -91,6 +114,7 @@ TD.q.review = (() => {
       if (group.id === TD.q.steps.TRUSTEES_ID) {
         addExtraTrustees(list);
       }
+      addRows(list, group.id);
       block.appendChild(list);
       container.appendChild(block);
     }

@@ -42,7 +42,9 @@ TD.q.steps = (() => {
       title: 'The beneficiaries',
       intro: 'The people the trust is for. The children born of the marriage, '
            + 'and their children, are covered by the deed automatically — you '
-           + 'do not need to name them here.',
+           + 'do not need to name them here. The trust deed names at most two '
+           + 'beneficiaries; if there are others, add them below and they will '
+           + 'be listed on the Master’s form J450.',
     },
     vesting: {
       title: 'If everyone named has died',
@@ -64,7 +66,9 @@ TD.q.steps = (() => {
       id: group.id,
       title: (COPY[group.id] && COPY[group.id].title) || group.label,
       intro: (COPY[group.id] && COPY[group.id].intro) || '',
-      fields: TD.fields.filter((f) => f.group === group.id),
+      // A derived field is computed by TD.derive from fields the client does
+      // fill in, so it is neither asked nor shown on the review step.
+      fields: TD.fields.filter((f) => f.group === group.id && !f.derived),
     }));
     groups.push({
       id: REVIEW_ID,
